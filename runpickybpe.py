@@ -3,7 +3,7 @@ import time
 
 filepath = "data/minipile.jsonl"
 
-num_lines =  1000000 # 100000   # now stop due to max_bytes of 1GB
+num_lines =  1000000 # 100000
 vocab_size = 131072 # 1000 # 131072 # 500 # 40960 # 256 + 50, 131072 ~ 128k
 tau = 0.9 # deletion threshold 
 

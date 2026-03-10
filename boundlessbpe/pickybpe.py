@@ -102,8 +102,7 @@ class BPEState:
 
     # work at a chunk level
     # where a document is stored as a list of chunks
-    # TODO: hardcoded max_bytes fix me!
-    def pretokenize(self, filepath : str, num_lines : int, compiled_pattern : Pattern[str], max_bytes = 1000000000) -> None:
+    def pretokenize(self, filepath : str, num_lines : int, compiled_pattern : Pattern[str]) -> None:
 
         start_time = time.time()
 
@@ -129,10 +128,6 @@ class BPEState:
 
                     total_chars += len(text)
                     total_bytes += len(text.encode("utf-8"))
-
-                    if total_bytes >= max_bytes:
-                        print('at max_bytes', i, max_bytes, total_chars, total_bytes)
-                        break
 
             # lets make parallel list of chunks and counts before we split up the chunks
             # sort descending by count for neatness, TODO: can take out later
@@ -169,10 +164,6 @@ class BPEState:
 
                     total_chars += len(text)
                     total_bytes += len(text.encode("utf-8"))
-
-                    if total_bytes >= max_bytes:
-                        print('at max_bytes', i, max_bytes, total_chars, total_bytes)
-                        break
 
             # all the counts are 1 here
             self.text_counts = [1]*len(self.text_chunks)

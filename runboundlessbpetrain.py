@@ -13,15 +13,13 @@ filepath = "data/minipile.jsonl"
 # automatically put the parameters from the log file 
 def main(logfilename):
 
-    (logfile, halfdirect, num_lines, max_bytes, vocab_size, tau, recalc, patname, blowup) = logfilename.split("_")
+    (logfile, halfdirect, num_lines, vocab_size, tau, recalc, patname, blowup) = logfilename.split("_")
 
     assert logfile == "logfile"
     assert halfdirect == "halfdirectrerun"
 
-    num_lines =  int(num_lines) # 1000000 # 100000   # now stop due to max_bytes of 1GB
+    num_lines =  int(num_lines) # 1000000 # 100000
     print("num_lines:", num_lines)
-    max_bytes =  int(max_bytes) # 100000000 # 1000000000 # stop after 1GB
-    print("max_bytes:", max_bytes)
     vocab_size = int(vocab_size) # 2500 # 131072 # 1000 # 131072 # 500 # 40960 # 256 + 50, 131072 ~ 128k
     print("vocab_size:", vocab_size)
     tau = float(tau) # 0.9 # deletion threshold
@@ -39,10 +37,10 @@ def main(logfilename):
     assert txt == "txt"
 
     print("tau:", tau)  # TODO: have two values for each
-    outprefix = f"./models/boundless_{num_lines}_{max_bytes}_{vocab_size}_{tau}_{recalc}_{patname}_{int(blowup)}"
+    outprefix = f"./models/boundless_{num_lines}_{vocab_size}_{tau}_{recalc}_{patname}_{int(blowup)}"
     print("outprefix:", outprefix)
 
-    # which pattern to use
+    # which pattern to useo
     if patname == "ultimate":
         tokenizer = FasterHalfDirectRegexTokenizer(tau, ULTIMATE_PATTERN_V1)
     if patname == "ultimate2":
@@ -56,7 +54,7 @@ def main(logfilename):
     else:
         assert False, "bad patname:" + patname
 
-    tokenizer.train(filepath, outprefix, num_lines, vocab_size, recalc, blowup, max_bytes)
+    tokenizer.train(filepath, outprefix, num_lines, vocab_size, recalc, blowup)
     tokenizer.register_special_tokens({"<|endoftext|>": vocab_size})
     # print(tokenizer.encode("<|endoftext|>hello world", allowed_special="all"))
 
