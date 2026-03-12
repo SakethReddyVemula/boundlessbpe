@@ -60,10 +60,47 @@ inv_byte_map = { v : k for k, v in byte_map.items() }
 import re
 
 def tobytes(s : str) -> bytes:
-    return b"".join([inv_byte_map[c] for c in s])
+    res = bytearray()
+    i = 0
+    while i < len(s):
+        if s[i:].startswith("<0x") and len(s) >= i + 6 and s[i+5] == '>':
+            hex_str = s[i+3:i+5]
+            try:
+                res.append(int(hex_str, 16))
+                i += 6
+                continue
+            except ValueError:
+                pass
+        char_bytes = s[i].encode('utf-8')
+        res.extend(char_bytes)
+        i += 1
+    return bytes(res)
 
 def frombytes(bs : bytes) -> str:
-    return "".join([byte_map[bytes([b])] for b in bs])
+    res = []
+    i = 0
+    while i < len(bs):
+        matched = False
+        for l in (4,3,2,1):
+            if i + l <= len(bs):
+                try:
+                    char = bs[i:i+l].decode('utf-8')
+                    # Aggressively hex encode everything except basic printable ASCII
+                    # to keep the vocabulary file syntax strictly space-delimited
+                    if len(char) == 1 and (char.isalnum() or char in "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"):
+                        res.append(char)
+                        i += l
+                        matched = True
+                        break
+                    else:
+                        # Fallback to hex
+                        pass
+                except UnicodeDecodeError:
+                    pass
+        if not matched:
+            res.append(f"<0x{bs[i]:02X}>")
+            i += 1
+    return "".join(res)
 
 # convert from a hex string to bytes,
 # like in a .vocab file
